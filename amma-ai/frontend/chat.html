@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat — Amma AI</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    body { display: flex; flex-direction: column; height: 100vh; }
+    .chat-layout { display: flex; flex: 1; overflow: hidden; }
+    .sidebar {
+      width: 280px; background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.25rem; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .sidebar-section h4 { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem; }
+    .reminder-item {
+      padding: 0.65rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--primary);
+      background: var(--primary-light);
+      margin-bottom: 0.5rem;
+      font-size: 0.82rem;
+    }
+    .reminder-item.high { border-color: var(--danger); background: var(--danger-light); }
+    .reminder-item .r-title { font-weight: 600; margin-bottom: 2px; }
+    .reminder-item .r-desc { color: var(--text-muted); font-size: 0.78rem; }
+    .chat-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .chat-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .chat-header .title { font-weight: 600; font-size: 1rem; }
+    .chat-header .subtitle { font-size: 0.8rem; color: var(--text-muted); }
+    .messages {
+      flex: 1; overflow-y: auto;
+      padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .message { display: flex; flex-direction: column; gap: 0.25rem; }
+    .message.user { align-items: flex-end; }
+    .message.ai { align-items: flex-start; }
+    .message-meta { font-size: 0.72rem; color: var(--text-muted); }
+    .chat-input-area {
+      padding: 1rem 1.5rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+    .input-row { display: flex; gap: 0.5rem; align-items: flex-end; }
+    .chat-textarea {
+      flex: 1; padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-family: inherit; font-size: 0.95rem;
+      resize: none; min-height: 44px; max-height: 120px;
+      transition: border-color 0.15s;
+    }
+    .chat-textarea:focus { outline: none; border-color: var(--primary); }
+
+    /* action buttons */
+    .action-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%; border: 1.5px solid var(--border);
+      background: var(--surface); cursor: pointer;
+      font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .action-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+    .action-btn.recording { background: var(--danger); border-color: var(--danger); animation: pulse 1s infinite; }
+    .send-btn {
+      width: 44px; height: 44px;
+      background: var(--primary); color: white;
+      border: none; border-radius: 50%;
+      cursor: pointer; font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s; flex-shrink: 0;
+    }
+    .send-btn:hover { background: var(--primary-dark); }
+    .send-btn:disabled { background: var(--border); cursor: not-allowed; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* image preview */
+    .image-preview {
+      display: none; align-items: center; gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem; color: var(--primary);
+    }
+    .image-preview.visible { display: flex; }
+    .image-preview img { width: 48px; height: 48px; border-radius: 6px; object-fit: cover; }
+    .image-preview .remove-img { margin-left: auto; cursor: pointer; font-size: 1.1rem; color: var(--text-muted); }
+
+    /* message image */
+    .msg-image { max-width: 200px; border-radius: 10px; margin-bottom: 0.4rem; }
+
+    .lang-bar { display: flex; gap: 0.4rem; }
+    .lang-btn {
+      padding: 0.25rem 0.7rem; border-radius: 999px;
+      border: 1px solid var(--border); background: var(--surface);
+      font-size: 0.8rem; cursor: pointer; transition: all 0.15s;
+    }
+    .lang-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .welcome-msg { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.9rem; }
+    .welcome-msg .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .quick-questions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; max-width: 400px; margin-left: auto; margin-right: auto; }
+    .quick-q {
+      padding: 0.5rem 1rem; border: 1px solid var(--border);
+      border-radius: 999px; background: var(--surface);
+      cursor: pointer; font-size: 0.85rem; transition: all 0.15s; text-align: center;
+    }
+    .quick-q:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+    .voice-status {
+      text-align: center; font-size: 0.82rem;
+      color: var(--danger); margin-bottom: 0.4rem;
+      display: none;
+    }
+    .voice-status.visible { display: block; }
+
+    @media (max-width: 640px) { .sidebar { display: none; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="nav-brand">
+      <div class="logo">A</div> Amma AI
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="chat.html" class="nav-link active">Chat</a>
+      <a href="dashboard.html" class="nav-link">ASHA Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="chat-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h4>Your reminders</h4>
+        <div id="reminders-list"><p style="font-size:0.82rem;color:var(--text-muted)">Loading...</p></div>
+      </div>
+      <div class="sidebar-section">
+        <h4>Quick help</h4>
+        <div style="font-size:0.82rem;color:var(--text-muted);line-height:1.8;">
+          <div>📞 <strong>104</strong> — Health helpline</div>
+          <div>🚑 <strong>108</strong> — Ambulance</div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <h4>Profile</h4>
+        <div id="profile-info" style="font-size:0.82rem;color:var(--text-muted);"></div>
+        <button class="btn btn-outline" style="width:100%;margin-top:0.75rem;font-size:0.82rem;" onclick="window.location.href='index.html'">Edit Profile</button>
+      </div>
+    </aside>
+
+    <div class="chat-main">
+      <div class="chat-header">
+        <div>
+          <div class="title">Amma AI Chat</div>
+          <div class="subtitle">Ask in Kannada, Hindi or English · Upload photos · Use voice</div>
+        </div>
+        <div class="lang-bar">
+          <button class="lang-btn active" onclick="setLang(this,'english')">EN</button>
+          <button class="lang-btn" onclick="setLang(this,'kannada')">ಕನ್ನಡ</button>
+          <button class="lang-btn" onclick="setLang(this,'hindi')">हिं</button>
+        </div>
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="welcome-msg">
+          <div class="icon">🤱</div>
+          <p>Hello! I'm Amma AI.<br>Ask me anything, upload a photo, or speak in your language.</p>
+          <div class="quick-questions">
+            <div class="quick-q" onclick="sendQuick('What foods should I eat in my second trimester?')">🥗 Foods in second trimester?</div>
+            <div class="quick-q" onclick="sendQuick('When should my baby get vaccinated?')">💉 Baby vaccination schedule?</div>
+            <div class="quick-q" onclick="sendQuick('What are the danger signs I should watch for during pregnancy?')">⚠️ What danger signs to watch?</div>
+            <div class="quick-q" onclick="sendQuick('How do I know if my baby is getting enough milk?')">🍼 Is my baby getting enough milk?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="voice-status" id="voice-status">🎤 Listening... speak now</div>
+        <div class="image-preview" id="image-preview">
+          <img id="preview-img" src="" alt="preview"/>
+          <span id="preview-name">image.jpg</span>
+          <span class="remove-img" onclick="removeImage()">✕</span>
+        </div>
+        <div class="input-row">
+          <!-- Image upload -->
+          <button class="action-btn" onclick="document.getElementById('img-input').click()" title="Upload photo">📷</button>
+          <input type="file" id="img-input" accept="image/*" style="display:none" onchange="previewImage(this)"/>
+
+          <!-- Voice input -->
+          <button class="action-btn" id="voice-btn" onclick="toggleVoice()" title="Voice input">🎤</button>
+
+          <textarea class="chat-textarea" id="chat-input"
+            placeholder="Type, speak, or upload a photo..."
+            rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+            oninput="autoResize(this)"></textarea>
+
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/chat.js"></script>
+</body>
+</html>

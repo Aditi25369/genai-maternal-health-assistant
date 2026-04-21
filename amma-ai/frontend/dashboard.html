@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASHA Dashboard — Amma AI</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .dashboard { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem; text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+    .stat-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .stat-card.danger .stat-value { color: var(--danger); }
+    .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .case-table { width: 100%; border-collapse: collapse; }
+    .case-table th {
+      text-align: left; font-size: 0.78rem; font-weight: 600;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 0.6rem 0.75rem; border-bottom: 2px solid var(--border);
+    }
+    .case-table td {
+      padding: 0.85rem 0.75rem; border-bottom: 1px solid var(--border);
+      font-size: 0.875rem; vertical-align: top;
+    }
+    .case-table tr:hover td { background: var(--bg); }
+    .case-name { font-weight: 600; }
+    .case-phone { color: var(--text-muted); font-size: 0.8rem; }
+    .case-symptoms { color: var(--text-muted); font-size: 0.82rem; max-width: 200px; }
+    .case-action { font-size: 0.82rem; color: var(--primary); max-width: 200px; }
+    .case-time { color: var(--text-muted); font-size: 0.78rem; white-space: nowrap; }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .refresh-btn { float: right; }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="nav-brand">
+      <div class="logo">A</div> Amma AI
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="chat.html" class="nav-link">Chat</a>
+      <a href="dashboard.html" class="nav-link active">ASHA Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="dashboard">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <div>
+        <h1 style="font-size:1.4rem; font-weight:600;">ASHA Worker Dashboard</h1>
+        <p class="text-muted" style="font-size:0.875rem;">Flagged high-risk cases in your community</p>
+      </div>
+      <button class="btn btn-outline refresh-btn" onclick="loadDashboard()">⟳ Refresh</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-label">Total users</div>
+      </div>
+      <div class="stat-card danger">
+        <div class="stat-value" id="stat-high-risk">—</div>
+        <div class="stat-label">High risk cases</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-flagged">—</div>
+        <div class="stat-label">Flagged today</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        ⚠️ Flagged cases requiring attention
+      </div>
+      <div id="cases-container">
+        <div class="empty-state">
+          <div class="icon">⏳</div>
+          <p>Loading cases...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-2">
+      <div class="section-title">Emergency contacts</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.75rem; font-size:0.875rem;">
+        <div style="padding:0.75rem; background:var(--danger-light); border-radius:var(--radius-sm); color:var(--danger);">
+          <strong>108</strong> — Ambulance emergency
+        </div>
+        <div style="padding:0.75rem; background:var(--primary-light); border-radius:var(--radius-sm); color:var(--primary);">
+          <strong>104</strong> — Health helpline Karnataka
+        </div>
+        <div style="padding:0.75rem; background:var(--warning-light); border-radius:var(--radius-sm); color:var(--warning);">
+          <strong>iCall 9152987821</strong> — Mental health support
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

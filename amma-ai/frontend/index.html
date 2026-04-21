@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amma AI — Maternal Health Companion</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .hero {
+      min-height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    .hero-icon {
+      width: 80px; height: 80px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 1.5rem;
+      color: white;
+    }
+    .hero h1 { font-size: 2.2rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; }
+    .hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 500px; margin: 0 auto 2rem; }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      max-width: 700px;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+    .feature {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      text-align: left;
+    }
+    .feature-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .feature h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .feature p { font-size: 0.82rem; color: var(--text-muted); }
+    .onboarding-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: var(--shadow-md);
+    }
+    .onboarding-card h2 { font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--text); }
+    .radio-group { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    .radio-card {
+      flex: 1; padding: 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer; text-align: center;
+      transition: all 0.15s; font-size: 0.875rem;
+    }
+    .radio-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .step { display: none; }
+    .step.active { display: block; }
+    .helpline {
+      margin-top: 1.5rem;
+      padding: 0.75rem;
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      color: var(--primary);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="nav-brand">
+      <div class="logo">A</div>
+      Amma AI
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="chat.html" class="nav-link">Chat</a>
+      <a href="dashboard.html" class="nav-link">ASHA Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="hero" id="hero-section">
+    <div class="hero-icon">🤱</div>
+    <h1>Amma AI</h1>
+    <p>Your 24/7 maternal health companion. Ask questions in Kannada, Hindi, or English — get safe, trusted answers.</p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <h3>24/7 Health Chat</h3>
+        <p>Ask anything about pregnancy, nutrition, newborn care anytime</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚠️</div>
+        <h3>Risk Detection</h3>
+        <p>Danger signs detected instantly with immediate guidance</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💉</div>
+        <h3>Vaccine Reminders</h3>
+        <p>Personalized vaccination and checkup schedule</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌐</div>
+        <h3>3 Languages</h3>
+        <p>Kannada · Hindi · English in one conversation</p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-lg" onclick="showOnboarding()">Get Started</button>
+  </div>
+
+  <div id="onboarding-section" style="display:none; padding: 2rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: calc(100vh - 60px);">
+    <div class="onboarding-card">
+      <h2>Set up your profile</h2>
+
+      <div class="step active" id="step-1">
+        <div class="form-group">
+          <label class="form-label">Your name</label>
+          <input class="form-input" id="name-input" placeholder="Enter your name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred language</label>
+          <div class="lang-pills">
+            <button class="lang-pill active" onclick="selectLang(this,'english')">English</button>
+            <button class="lang-pill" onclick="selectLang(this,'kannada')">ಕನ್ನಡ</button>
+            <button class="lang-pill" onclick="selectLang(this,'hindi')">हिंदी</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">I am a</label>
+          <div class="radio-group">
+            <div class="radio-card selected" id="pregnant-card" onclick="selectType('pregnant')">🤰 Pregnant</div>
+            <div class="radio-card" id="newmom-card" onclick="selectType('newmom')">🤱 New mother</div>
+          </div>
+        </div>
+        <div id="pregnant-fields">
+          <div class="form-group">
+            <label class="form-label">Current week of pregnancy</label>
+            <input class="form-input" id="week-input" type="number" min="1" max="42" placeholder="e.g. 24" />
+          </div>
+        </div>
+        <div id="newmom-fields" style="display:none">
+          <div class="form-group">
+            <label class="form-label">Baby's date of birth</label>
+            <input class="form-input" id="dob-input" type="date" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone number (optional)</label>
+          <input class="form-input" id="phone-input" placeholder="+91 XXXXX XXXXX" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your location (optional)</label>
+          <input class="form-input" id="location-input" placeholder="e.g. Bengaluru, Karnataka" />
+        </div>
+        <button class="btn btn-primary w-full" onclick="saveProfile()">Start Chatting →</button>
+      </div>
+
+      <div class="helpline">
+        Karnataka 104 Health Helpline · 108 Ambulance · Free government health services available
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8000/api';
+    let selectedLang = 'english';
+    let selectedType = 'pregnant';
+
+    function showOnboarding() {
+      document.getElementById('hero-section').style.display = 'none';
+      document.getElementById('onboarding-section').style.display = 'flex';
+    }
+
+    function selectLang(el, lang) {
+      document.querySelectorAll('.lang-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      selectedLang = lang;
+    }
+
+    function selectType(type) {
+      selectedType = type;
+      document.getElementById('pregnant-card').classList.toggle('selected', type === 'pregnant');
+      document.getElementById('newmom-card').classList.toggle('selected', type === 'newmom');
+      document.getElementById('pregnant-fields').style.display = type === 'pregnant' ? 'block' : 'none';
+      document.getElementById('newmom-fields').style.display = type === 'newmom' ? 'block' : 'none';
+    }
+
+    function saveProfile() {
+      const name = document.getElementById('name-input').value.trim();
+      if (!name) { alert('Please enter your name'); return; }
+
+      const profile = {
+        user_id: 'user_' + Date.now(),
+        name,
+        language: selectedLang,
+        gestational_week: selectedType === 'pregnant' ? parseInt(document.getElementById('week-input').value) || null : null,
+        child_dob: selectedType === 'newmom' ? document.getElementById('dob-input').value || null : null,
+        phone: document.getElementById('phone-input').value || null,
+        location: document.getElementById('location-input').value || null,
+      };
+
+      localStorage.setItem('amma_profile', JSON.stringify(profile));
+
+      fetch(`${API}/reminders`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          user_id: profile.user_id,
+          gestational_week: profile.gestational_week,
+          child_dob: profile.child_dob,
+        })
+      }).catch(() => {});
+
+      window.location.href = 'chat.html';
+    }
+
+    const existing = localStorage.getItem('amma_profile');
+    if (existing) {
+      document.querySelector('.hero p').insertAdjacentHTML('afterend',
+        '<p class="text-muted" style="font-size:0.9rem; margin-bottom:0.5rem">Welcome back! <a href="chat.html" style="color:var(--primary)">Continue chatting →</a></p>'
+      );
+    }
+  </script>
+</body>
+</html>
